@@ -1,0 +1,28 @@
+name: "Install Grafbase CLI"
+description: "Install the Grafbase CLI"
+inputs:
+  version:
+    description: "Which version to install. Default to the latest version."
+    required: true
+outputs:
+  version:
+    description: "The version of the Grafbase CLI that was installed"
+    value: ${{ steps.set-output.outputs.version }}
+runs:
+  using: "composite"
+  steps:
+    - name: Download
+      shell: bash
+      run: |
+        curl -fsSL https://grafbase.com/downloads/cli | bash -s -- $GRAFBASE_VERSION
+      env:
+        GRAFBASE_VERSION: ${{ inputs.version }}
+
+    - name: Set GitHub Path
+      shell: bash
+      run: echo "~/.grafbase/bin" >> $GITHUB_PATH
+
+    - name: Set output
+      id: set-output
+      shell: bash
+      run: echo version=$(grafbase --version) >> $GITHUB_OUTPUT
